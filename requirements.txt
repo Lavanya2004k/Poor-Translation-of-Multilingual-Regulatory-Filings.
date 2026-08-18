@@ -1,0 +1,11 @@
+datasets
+evaluate
+langdetect
+openai
+pdfplumber
+PyPDF2
+streamlit
+torch
+tqdm
+transformers
+

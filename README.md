@@ -1,103 +1,141 @@
 # Poor Translation of Multilingual Regulatory Filings
 
-This repository examines how poor or inconsistent translation can affect multilingual regulatory filings. Regulatory documents often contain legal, financial, technical, and compliance-sensitive language, so even small translation errors can change meaning, reduce clarity, or create risk for organizations and readers.
+A multilingual regulatory filing translation project built around mBART-50, PDF/text extraction, translation caching, fine-tuning workflows, and a Streamlit interface for reviewing translated legal and financial document segments.
 
-## Overview
+The project is intended for experimentation with translation quality in high-stakes regulatory filings, where terminology, structure, completeness, and consistency matter.
 
-The project focuses on identifying, analyzing, and documenting translation quality issues in regulatory filings across languages. It can be used as a research workspace for studying mistranslations, terminology drift, formatting problems, and loss of legal or regulatory meaning in translated filing documents.
+## Features
 
-## Motivation
+- Translate regulatory filing content from PDF or TXT files.
+- Segment legal documents into articles, clauses, headings, and paragraphs.
+- Cache translations locally with SQLite to avoid repeated model calls.
+- Fine-tune mBART-50 on domain-specific translated examples.
+- Run an interactive Streamlit app for upload, translation, fine-tuning, and analytics.
+- Use OpenAI-assisted translation scripts for GPT-based legal translation experiments.
 
-Multilingual regulatory filings must communicate the same obligations, disclosures, and risks across every language version. Poor translation can lead to:
-
-- Incorrect interpretation of legal or financial statements
-- Inconsistent terminology across related documents
-- Loss of context in technical or regulatory language
-- Formatting changes that make filings harder to review
-- Compliance, audit, or stakeholder communication risks
-
-This repository aims to make those issues easier to identify and discuss through structured examples and analysis.
-
-## Possible Project Goals
-
-- Collect examples of multilingual regulatory filings and their translations
-- Compare source text with translated text
-- Identify mistranslated regulatory, legal, or financial terms
-- Classify translation errors by severity and type
-- Document patterns that commonly appear in low-quality translations
-- Support future work on translation quality evaluation for high-stakes documents
-
-## Repository Structure
-
-The repository can be organized as follows:
+## Project Structure
 
 ```text
 .
-├── data/                 # Source filings, translated documents, or extracted text
-├── notebooks/            # Exploratory analysis and experiments
-├── src/                  # Scripts for extraction, comparison, or evaluation
-├── reports/              # Findings, summaries, and case studies
-├── docs/                 # Project notes and methodology
-└── README.md             # Project documentation
+├── assets/                    # Static assets such as the project logo
+├── configs/                   # Model and generation configuration JSON files
+├── data/                      # Training and validation datasets
+├── outputs/                   # Sample/generated translation outputs
+├── src/
+│   └── filing_translator/     # Main application and translation scripts
+│       ├── complete.py        # Main mBART training and translation CLI
+│       ├── finetnow.py        # Memory-optimized fine-tuning workflow
+│       ├── finetuned.py       # Fine-tuned translation workflow
+│       ├── frontend.py        # Streamlit web application
+│       ├── open.py            # OpenAI-assisted translation workflow
+│       ├── preprocess.py      # PDF preprocessing and segmentation
+│       └── translatoragent.py # Translator agent implementation
+├── complete.py                # Backward-compatible CLI entry point
+├── frontend.py                # Backward-compatible Streamlit entry point
+├── requirements.txt           # Python dependencies
+└── README.md
 ```
+
+Root-level Python files are lightweight compatibility wrappers. The main source files live in `src/filing_translator/`.
 
 ## Getting Started
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/Lavanya2004k/Poor-Translation-of-Multilingual-Regulatory-Filings.git
-cd Poor-Translation-of-Multilingual-Regulatory-Filings
+git clone https://github.com/Lavanya2004k/Poor-Translation-of-Multilingual-Regulatory-Filings..git
+cd Poor-Translation-of-Multilingual-Regulatory-Filings.
 ```
 
-If analysis scripts or notebooks are added, install the required dependencies listed in the project, then run the relevant notebook or script.
-
-Example workflow:
+Create and activate a virtual environment:
 
 ```bash
-# Create a virtual environment
 python -m venv .venv
 source .venv/bin/activate
+```
 
-# Install dependencies when requirements.txt is available
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Suggested Methodology
+## Run the Streamlit App
 
-1. Select a regulatory filing and identify the source language.
-2. Extract comparable sections from the source and translated versions.
-3. Align translated passages with the original text.
-4. Evaluate terminology, completeness, formatting, and meaning preservation.
-5. Record each issue with its location, error type, severity, and explanation.
-6. Summarize recurring translation problems and their potential regulatory impact.
+```bash
+streamlit run frontend.py
+```
 
-## Error Categories
+The app supports document translation, fine-tuning, translation cache analytics, and result downloads.
 
-Translation issues may be classified into categories such as:
+## Command-Line Translation
 
-- Terminology inconsistency
-- Missing or omitted information
-- Incorrect legal or financial meaning
-- Overly literal translation
-- Ambiguous wording
-- Formatting or table structure errors
-- Incorrect names, dates, numbers, or units
-- Loss of context across sections
+Use the main CLI entry point:
 
-## Contributing
+```bash
+python complete.py \
+  --translate_file path/to/document.pdf \
+  --src_lang de_DE \
+  --tgt_lang en_XX \
+  --model_path facebook/mbart-large-50 \
+  --output_file outputs/translated_output.json
+```
 
-Contributions are welcome. Useful contributions may include:
+If no `--model_path` is provided, the script expects a local fine-tuned model directory named `fine_tuned_mbart_legal`.
 
-- Additional examples of translated regulatory filings
-- Improved error classification guidelines
-- Scripts for text extraction or document comparison
-- Case studies of translation errors
-- Documentation improvements
+## Fine-Tuning
 
-When adding examples, avoid including confidential, private, or copyrighted material unless you have permission to use it.
+Fine-tune mBART with prepared training and validation files:
+
+```bash
+python complete.py \
+  --train_file data/train.json \
+  --val_file data/val.json \
+  --src_lang de_DE \
+  --tgt_lang en_XX \
+  --epochs 5 \
+  --batch_size 8
+```
+
+For lower-memory machines, use the memory-optimized workflow:
+
+```bash
+python finetnow.py \
+  --train_file data/train.json \
+  --val_file data/val.json \
+  --src_lang de_DE \
+  --tgt_lang en_XX
+```
+
+## Preprocessing PDFs
+
+`src/filing_translator/preprocess.py` extracts PDF text into segmented JSON blocks. Update the input/output paths in that script before running it against your local PDF collection.
+
+```bash
+python preprocess.py
+```
+
+## Data
+
+Training and validation files are stored in `data/`. Translation outputs are stored in `outputs/`. Runtime-generated artifacts such as local model checkpoints, logs, and translation cache files are ignored by Git.
+
+## Language Codes
+
+The mBART workflows use language codes such as:
+
+- `en_XX` for English
+- `fr_FR` for French
+- `de_DE` for German
+- `es_XX` for Spanish
+- `it_IT` for Italian
+
+## Notes
+
+- Large model files are not committed to the repository.
+- The SQLite cache is treated as a local runtime artifact.
+- Regulatory translations should be reviewed by qualified legal, financial, or compliance professionals before official use.
 
 ## Disclaimer
 
-This project is for educational and research purposes only. It does not provide legal, financial, regulatory, or translation certification advice. Regulatory filings should be reviewed by qualified professionals before use in official or compliance-sensitive settings.
+This project is for research and educational purposes only. It does not provide legal, financial, regulatory, or certified translation advice.
 

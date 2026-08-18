@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+
+# Model and training artifacts
+fine_tuned_mbart_legal/
+results/
+logs/
+checkpoints/
+
+# Runtime caches and generated local data
+translation_cache.db
+translation_cache.json
+segmented_blocks/
+translated_segments/
+
+# System files
+.DS_Store
+
