@@ -1,6 +1,6 @@
 # Poor Translation of Multilingual Regulatory Filings
 
-A multilingual regulatory filing translation project built around mBART-50, PDF/text extraction, translation caching, fine-tuning workflows, and a Streamlit interface for reviewing translated legal and financial document segments.
+A multilingual Agent regulatory filing translation project built around mBART-50, PDF/text extraction, translation caching, fine-tuning workflows, and a Streamlit interface for reviewing translated legal and financial document segments.
 
 The project is intended for experimentation with translation quality in high-stakes regulatory filings, where terminology, structure, completeness, and consistency matter.
 
@@ -10,8 +10,8 @@ The project is intended for experimentation with translation quality in high-sta
 - Segment legal documents into articles, clauses, headings, and paragraphs.
 - Cache translations locally with SQLite to avoid repeated model calls.
 - Fine-tune mBART-50 on domain-specific translated examples.
+- Multi agents automation 
 - Run an interactive Streamlit app for upload, translation, fine-tuning, and analytics.
-- Use OpenAI-assisted translation scripts for GPT-based legal translation experiments.
 
 ## Project Structure
 
